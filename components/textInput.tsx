@@ -1,17 +1,27 @@
 "use client"
 
-import { useState } from "react";
 import { Button } from "./ui/button";
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { EssayCheckResponse, essaySchema, SentenceSuccessResponse, TEssaySchema } from "@/lib/types";
+import { AllFeedback, essaySchema, TEssaySchema } from "@/lib/types";
 import TipsBlock from "./tips-block";
-
+import { downloadFeedbackDocx } from "@/app/features/generateFile";
+import { useState } from "react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
+const fieldLabels: Record<keyof TEssaySchema, string> = {
+    intro: "Introductory Paragraph",
+    body1: "Body Paragraph 1",
+    body2: "Body Paragraph 2",
+    body3: "Body Paragraph 3",
+    conc: "Concluding Paragraph",
+};
 function TextInput() {
-
+    const [missingOpen, setMissingOpen] = useState(false);
+    const [missingKeys, setMissingKeys] = useState<(keyof TEssaySchema)[]>([]);
     const {
         register,
         handleSubmit,
+        setFocus,
         formState: {
             // errors,
             isSubmitting
@@ -20,10 +30,13 @@ function TextInput() {
     } = useForm({
         resolver: zodResolver(essaySchema)
     });
-    const [output, setOuput] = useState("")
-
+    const onInvalid = (errs: FieldErrors<TEssaySchema>) => {
+        const keys = Object.keys(errs) as (keyof TEssaySchema)[];
+        setMissingKeys(keys);
+        setMissingOpen(true);
+    };
     const onSubmit = async (data: TEssaySchema) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        await new Promise((resolve) => setTimeout(resolve, 3000))
         const structureRes = await fetch("/api/content", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -146,6 +159,24 @@ function TextInput() {
         const concGrammarJson = await concGrammarRes.json();
         console.log(concGrammarJson.body1GrammarFeedback);
 
+
+        const all: AllFeedback = {
+            content: {
+                intro: structureJson.structureFeedback ?? "",
+                body1: body1StructureJson.body1StructureFeedback ?? "",
+                body2: body2StructureJson.body2StructureFeedback ?? "",
+                body3: body3StructureJson.body3StructureFeedback ?? "",
+                conc: concJson.concStructureFeedback ?? "",
+            },
+            grammar: {
+                intro: grammarJson.grammarFeedback ?? "",
+                body1: body1GrammarJson.body1GrammarFeedback ?? "",
+                body2: body2GrammarJson.body1GrammarFeedback ?? "",
+                body3: body3GrammarJson.body1GrammarFeedback ?? "",
+                conc: concGrammarJson.body1GrammarFeedback ?? "",
+            },
+        }
+        downloadFeedbackDocx(all, "comparative-essay-feedback.docx")
     };
 
     return (
@@ -153,7 +184,7 @@ function TextInput() {
             <div
                 className="flex flex-col justify-center w-3/4 max-w-5xl mx-auto px-2.5"
             >
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-4">
                     <div
                         className="flex flex-col gap-2 p-5 bg-white rounded-[7px]"
                         translate="no"
@@ -175,7 +206,7 @@ function TextInput() {
                                             {...register("intro")}
                                             spellCheck="false"
                                             className="h-[20vh] w-full border-none outline-none resize-none bg-none text-[18px] px-3.75 py-2.5"
-                                            placeholder="Paste the comparative essay here."
+                                            placeholder="Write Introductory Paragraph here."
                                         ></textarea>
 
                                     </div>
@@ -205,7 +236,7 @@ function TextInput() {
                                             {...register("body1")}
                                             spellCheck="false"
                                             className="h-[20vh] w-full border-none outline-none resize-none bg-none text-[18px] px-3.75 py-2.5"
-                                            placeholder="Paste the comparative essay here."
+                                            placeholder="Write Body Paragraph 1 here."
                                         ></textarea>
                                     </div>
                                 </div>
@@ -234,7 +265,7 @@ function TextInput() {
                                             {...register("body2")}
                                             spellCheck="false"
                                             className="h-[20vh] w-full border-none outline-none resize-none bg-none text-[18px] px-3.75 py-2.5"
-                                            placeholder="Paste the comparative essay here."
+                                            placeholder="Write Body Paragraph 2 here."
                                         ></textarea>
                                     </div>
                                 </div>
@@ -262,7 +293,7 @@ function TextInput() {
                                             {...register("body3")}
                                             spellCheck="false"
                                             className="h-[20vh] w-full border-none outline-none resize-none bg-none text-[18px] px-3.75 py-2.5"
-                                            placeholder="Paste the comparative essay here."
+                                            placeholder="Write Body Paragraph 3 here."
                                         ></textarea>
                                     </div>
                                 </div>
@@ -288,7 +319,7 @@ function TextInput() {
                                             {...register("conc")}
                                             spellCheck="false"
                                             className="h-[20vh] w-full border-none outline-none resize-none bg-none text-[18px] px-3.75 py-2.5"
-                                            placeholder="Paste the comparative essay here."
+                                            placeholder="Write Concluding Paragraph here."
                                         ></textarea>
                                     </div>
                                 </div>
@@ -303,6 +334,37 @@ function TextInput() {
                                 Check
                             </Button>
                         </div>
+                        <AlertDialog open={missingOpen} onOpenChange={setMissingOpen}>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>いくつかの部分が未入力です</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        「チェック」を押す前に、次の部分を入力してください。
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+
+                                <ul className="list-disc pl-6">
+                                    {missingKeys.map((k) => (
+                                        <li key={k}>{fieldLabels[k]}</li>
+                                    ))}
+                                </ul>
+
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>閉じる</AlertDialogCancel>
+                                    {missingKeys[0] && (
+                                        <AlertDialogAction
+                                            onClick={() => {
+                                                const first = missingKeys[0];
+                                                setMissingOpen(false);
+                                                setTimeout(() => setFocus(first), 0);
+                                            }}
+                                        >
+                                            どれか1つでも空だと、チェックできません。
+                                        </AlertDialogAction>
+                                    )}
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 </form>
             </div>

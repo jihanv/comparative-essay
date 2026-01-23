@@ -52,3 +52,20 @@ export type ParagraphCheck = {
 export type EssayCheckResponse = {
   results: ParagraphCheck[];
 };
+
+export type AllFeedback = {
+  content: {
+    intro: string;
+    body1: string;
+    body2: string;
+    body3: string;
+    conc: string;
+  };
+  grammar: {
+    intro: string;
+    body1: string;
+    body2: string;
+    body3: string;
+    conc: string;
+  };
+};
