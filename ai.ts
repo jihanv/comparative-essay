@@ -1,9 +1,10 @@
 import { Anthropic } from "@anthropic-ai/sdk";
+import { NextResponse } from "next/server";
 
 const SYSTEM_PROMPT = ``;
 
 const anthropic = new Anthropic({
-  apiKey: process.env.VITE_ANTHROPIC_API_KEY,
+  apiKey: process.env.ANTHROPIC_API_KEY,
   dangerouslyAllowBrowser: false,
 });
 

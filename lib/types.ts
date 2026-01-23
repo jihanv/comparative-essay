@@ -1,23 +1,50 @@
 import z from "zod";
 
-export const sentenceSchema = z.object({
+export const essaySchema = z.object({
   intro: z
     .string()
-    .max(5000, "Paragraphs should be less than 500 characters long"),
+    .max(5000, "Paragraphs should be less than 500 characters long")
+    .min(1, "Intro is required"),
   body1: z
     .string()
-    .max(5000, "Paragraphs should be less than 500 characters long"),
+    .max(5000, "Paragraphs should be less than 500 characters long")
+    .min(1, "Body 1 is required"),
   body2: z
     .string()
-    .max(5000, "Paragraphs should be less than 500 characters long"),
+    .max(5000, "Paragraphs should be less than 500 characters long")
+    .min(1, "Body 2 is required"),
   conc: z
     .string()
-    .max(5000, "Paragraphs should be less than 500 characters long"),
+    .max(5000, "Paragraphs should be less than 500 characters long")
+    .min(1, "Conclusion is required"),
 });
 
-export type TSentenceSchema = z.infer<typeof sentenceSchema>;
+export type TEssaySchema = z.infer<typeof essaySchema>;
 
 export type SentenceSuccessResponse = {
   success: true;
   translated: string;
+};
+export type ParagraphCheck = {
+  role: "intro" | "body" | "conclusion";
+  scores: {
+    structure: number;
+    comparison: number;
+    evidence_or_support: number;
+    clarity_language: number;
+  };
+  feedback: {
+    what_works: string[];
+    fix_next: string[];
+  };
+  suggested_revision: string;
+  updatedMemory: {
+    thesis: string | null;
+    comparePoints: string[] | null;
+    paragraphSummary: string;
+  };
+};
+
+export type EssayCheckResponse = {
+  results: ParagraphCheck[];
 };

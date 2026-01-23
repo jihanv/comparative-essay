@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { sentenceSchema, SentenceSuccessResponse, TSentenceSchema } from "@/lib/types";
+import { EssayCheckResponse, essaySchema, SentenceSuccessResponse, TEssaySchema } from "@/lib/types";
 import TipsBlock from "./tips-block";
 
 function TextInput() {
@@ -19,26 +19,28 @@ function TextInput() {
         }
 
     } = useForm({
-        resolver: zodResolver(sentenceSchema)
+        resolver: zodResolver(essaySchema)
     });
     const [output, setOuput] = useState("")
 
-    const onSubmit = async (data: TSentenceSchema) => {
+    const onSubmit = async (data: TEssaySchema) => {
         await new Promise((resolve) => setTimeout(resolve, 1000))
-        const response = await fetch("/api", {
-            method: "post",
-            body: JSON.stringify(data),
-            headers: {
-                "Content-Type": "application/json"
-            }
+        const structureRes = await fetch("/api/content", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ intro: data.intro }),
         });
-        if (!response.ok) {
-            alert("Translation failed!")
-            return
-        }
-        const text: SentenceSuccessResponse = await response.json()
-        console.log("Form data:", text.translated);
-        setOuput(`${text.translated}`)
+        const structureJson = await structureRes.json();
+
+        const grammarRes = await fetch("/api/grammar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ intro: data.intro }),
+        });
+        const grammarJson = await grammarRes.json();
+
+        console.log(structureJson.structureFeedback);
+        console.log(grammarJson.grammarFeedback);
     };
 
     return (
