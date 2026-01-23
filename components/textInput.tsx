@@ -7,7 +7,10 @@ import { AllFeedback, essaySchema, TEssaySchema } from "@/lib/types";
 import TipsBlock from "./tips-block";
 import { downloadFeedbackDocx } from "@/app/features/generateFile";
 import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
+import { Loader2 } from "lucide-react";
 const fieldLabels: Record<keyof TEssaySchema, string> = {
     intro: "Introductory Paragraph",
     body1: "Body Paragraph 1",
@@ -367,6 +370,29 @@ function TextInput() {
                         </AlertDialog>
                     </div>
                 </form>
+                <footer className="text-xs">© Jihan V. 2026</footer>
+                <footer className="text-xs">Multiple Choice Generator</footer>
+                <Dialog open={isSubmitting}>
+                    <DialogContent
+                        className="sm:max-w-md"
+                        // hides the X button (DialogContent renders a close button by default)
+                        // if your shadcn version supports it:
+                        // closeButton={false}
+                        onPointerDownOutside={(e) => e.preventDefault()}
+                        onEscapeKeyDown={(e) => e.preventDefault()}
+                    >
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                                テストを作成しています…
+                            </DialogTitle>
+                            <DialogDescription>
+                                Please wait—don’t close this tab/window while we generate feedback.
+                                フィードバックを作成しています。完了するまで、このタブ／ウィンドウを閉じないでください。。
+                            </DialogDescription>
+                        </DialogHeader>
+                    </DialogContent>
+                </Dialog>
             </div>
         </>
     );
