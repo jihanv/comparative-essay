@@ -121,6 +121,30 @@ function TextInput() {
         const body3GrammarJson = await body3GrammarRes.json();
         console.log(body3GrammarJson.body1GrammarFeedback);
 
+        //conc
+
+        const concRes = await fetch("/api/concluding", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                paragraph: data.conc,      // <-- your conclusion textarea
+                introContext: contextJson, // <-- extracted from intro
+            }),
+        });
+
+        const concJson = await concRes.json();
+        console.log(concJson.concStructureFeedback);
+
+
+        const concGrammarRes = await fetch("/api/body1-grammar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                paragraph: data.conc,
+            }),
+        });
+        const concGrammarJson = await concGrammarRes.json();
+        console.log(concGrammarJson.body1GrammarFeedback);
 
     };
 

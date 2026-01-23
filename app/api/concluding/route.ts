@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { Anthropic } from "@anthropic-ai/sdk";
-import { BODY3_CONTENT_RUBRIC } from "@/lib/rubrics";
+import { CONC_CONTENT_RUBRIC } from "@/lib/rubrics";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -26,14 +26,11 @@ export async function POST(req: Request) {
     model: "claude-haiku-4-5-20251001",
     max_tokens: 500,
     temperature: 0,
-    system: BODY3_CONTENT_RUBRIC,
+    system: CONC_CONTENT_RUBRIC,
     messages: [
       {
         role: "user",
-        content: JSON.stringify({
-          introContext,
-          paragraph,
-        }),
+        content: JSON.stringify({ introContext, paragraph }),
       },
     ],
   });
@@ -44,5 +41,5 @@ export async function POST(req: Request) {
     .join("")
     .trim();
 
-  return NextResponse.json({ body3StructureFeedback: out });
+  return NextResponse.json({ concStructureFeedback: out });
 }
