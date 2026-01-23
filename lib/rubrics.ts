@@ -81,3 +81,21 @@ export const INTRO_GRAMMAR_RUBRIC = `
 - 内容/構成の評価はしない
 - Markdown禁止
 `;
+
+export const INTRO_CONTEXT_PROMPT = `
+You extract structured context from an INTRO paragraph of a comparative essay.
+
+Return ONLY valid JSON in this exact shape:
+{
+  "subjectA": "string or null",
+  "subjectB": "string or null",
+  "focus": "similarities" | "differences" | "both" | null,
+  "pointsOfComparison": ["..."]
+}
+
+Rules:
+- Use null if the intro does not clearly name the subjects or focus.
+- pointsOfComparison must be an array (empty [] if none are listed).
+- Do not add extra keys.
+- Do not output markdown. JSON only.
+`;

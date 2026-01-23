@@ -39,6 +39,15 @@ function TextInput() {
         });
         const grammarJson = await grammarRes.json();
 
+        const contextRes = await fetch("/api/context", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ intro: data.intro }),
+        });
+        const contextJson = await contextRes.json();
+
+        console.log("CONTEXT:", contextJson);
+
         console.log(structureJson.structureFeedback);
         console.log(grammarJson.grammarFeedback);
     };

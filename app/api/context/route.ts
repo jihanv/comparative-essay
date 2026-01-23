@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { Anthropic } from "@anthropic-ai/sdk";
-import { INTRO_STRUCTURE_RUBRIC } from "@/lib/rubrics";
+import { INTRO_CONTEXT_PROMPT } from "@/lib/rubrics";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -8,28 +8,17 @@ const anthropic = new Anthropic({
 
 export async function POST(req: Request) {
   const body = await req.json();
-
   const intro = body.intro;
 
-  // Check if rubric exists
   if (!intro || typeof intro !== "string") {
-    return NextResponse.json(
-      { error: "Missing intro paragraph" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Missing intro" }, { status: 400 });
   }
 
-  //Send Rubric to claude
   const msg = await anthropic.messages.create({
     model: "claude-3-haiku-20240307",
-    max_tokens: 800,
-    system: INTRO_STRUCTURE_RUBRIC,
-    messages: [
-      {
-        role: "user",
-        content: `Here is the intro paragraph. Evaluate it using the rubric.\n\n${intro}`,
-      },
-    ],
+    max_tokens: 1000,
+    system: INTRO_CONTEXT_PROMPT,
+    messages: [{ role: "user", content: intro }],
   });
 
   const out = msg.content
@@ -37,5 +26,15 @@ export async function POST(req: Request) {
     .map((b) => b.text)
     .join("");
 
-  return NextResponse.json({ structureFeedback: out });
+  let parsed;
+  try {
+    parsed = JSON.parse(out);
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid JSON from model", raw: out },
+      { status: 500 },
+    );
+  }
+
+  return NextResponse.json(parsed);
 }
