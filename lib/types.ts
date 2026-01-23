@@ -13,6 +13,10 @@ export const essaySchema = z.object({
     .string()
     .max(5000, "Paragraphs should be less than 500 characters long")
     .min(1, "Body 2 is required"),
+  body3: z
+    .string()
+    .max(5000, "Paragraphs should be less than 500 characters long")
+    .min(1, "Body 2 is required"),
   conc: z
     .string()
     .max(5000, "Paragraphs should be less than 500 characters long")

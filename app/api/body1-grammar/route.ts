@@ -8,23 +8,25 @@ const anthropic = new Anthropic({
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const intro = body.intro;
+  const paragraph = body.paragraph;
 
-  if (!intro || typeof intro !== "string") {
-    return NextResponse.json({ error: "Missing intro" }, { status: 400 });
+  if (!paragraph || typeof paragraph !== "string") {
+    return NextResponse.json({ error: "Missing paragraph" }, { status: 400 });
   }
 
   const msg = await anthropic.messages.create({
     model: "claude-haiku-4-5-20251001",
-    max_tokens: 700,
+    max_tokens: 1000, // detailed grammar
     system: GRAMMAR_RUBRIC,
-    messages: [{ role: "user", content: intro }],
+    messages: [{ role: "user", content: paragraph }],
+    temperature: 0,
   });
 
   const out = msg.content
     .filter((b) => b.type === "text")
     .map((b) => b.text)
-    .join("");
+    .join("")
+    .trim();
 
-  return NextResponse.json({ grammarFeedback: out });
+  return NextResponse.json({ body1GrammarFeedback: out });
 }
