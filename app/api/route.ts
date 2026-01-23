@@ -1,5 +1,5 @@
 import { sentenceSchema, TSentenceSchema } from "@/lib/types";
-import { translateFromClaude } from "@/ai";
+import { editFromClaude } from "@/ai";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
   const data: TSentenceSchema = result.data;
 
-  const literalSentence = await translateFromClaude(data.sentence);
+  const literalSentence = await editFromClaude(data.intro);
 
   // translate
   return NextResponse.json(
