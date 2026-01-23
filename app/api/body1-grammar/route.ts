@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
   const msg = await anthropic.messages.create({
     model: "claude-haiku-4-5-20251001",
-    max_tokens: 500, // detailed grammar
+    max_tokens: 1000, // detailed grammar
     system: GRAMMAR_RUBRIC,
     messages: [{ role: "user", content: paragraph }],
     temperature: 0,
