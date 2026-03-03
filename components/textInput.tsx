@@ -371,7 +371,7 @@ function TextInput() {
                     </div>
                 </form>
                 <footer className="text-xs">© Jihan V. 2026</footer>
-                <footer className="text-xs">Multiple Choice Generator</footer>
+                <footer className="text-xs">Comparative Essay Checker</footer>
                 <Dialog open={isSubmitting}>
                     <DialogContent
                         className="sm:max-w-md"
