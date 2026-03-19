@@ -1,44 +1,11 @@
-import { NextResponse } from "next/server";
 import { BODY1_CONTENT_RUBRIC } from "@/lib/rubrics";
-import { getAnthropicClient } from "@/lib/anthropic";
+import { handleParagraphContentCheck } from "@/lib/paragraph-content";
 
 export async function POST(req: Request) {
-  const body = await req.json();
-
-  const paragraph = body.paragraph;
-  const introContext = body.introContext;
-
-  if (!paragraph || typeof paragraph !== "string") {
-    return NextResponse.json({ error: "Missing paragraph" }, { status: 400 });
-  }
-  if (!introContext || typeof introContext !== "object") {
-    return NextResponse.json(
-      { error: "Missing introContext" },
-      { status: 400 },
-    );
-  }
-  const anthropic = getAnthropicClient();
-  const msg = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 1000,
-    temperature: 0,
-    system: BODY1_CONTENT_RUBRIC,
-    messages: [
-      {
-        role: "user",
-        content: JSON.stringify({
-          introContext,
-          paragraph,
-        }),
-      },
-    ],
+  return handleParagraphContentCheck({
+    req,
+    systemPrompt: BODY1_CONTENT_RUBRIC,
+    responseKey: "body1StructureFeedback",
+    maxTokens: 1000,
   });
-
-  const out = msg.content
-    .filter((b) => b.type === "text")
-    .map((b) => b.text)
-    .join("")
-    .trim();
-
-  return NextResponse.json({ body1StructureFeedback: out });
 }
