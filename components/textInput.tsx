@@ -47,6 +47,17 @@ function TextInput() {
   } = useForm({
     resolver: zodResolver(essaySchema),
   });
+
+  const fetchParagraphGrammar = async (paragraph: string) => {
+    const res = await fetch("/api/paragraph-grammar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paragraph }),
+    });
+
+    return res.json();
+  };
+
   const onInvalid = (errs: FieldErrors<TEssaySchema>) => {
     const keys = Object.keys(errs) as (keyof TEssaySchema)[];
     setMissingKeys(keys);
@@ -87,14 +98,7 @@ function TextInput() {
     });
     const body1StructureJson = await body1StructureRes.json();
 
-    const body1GrammarRes = await fetch("/api/paragraph-grammar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paragraph: data.body1,
-      }),
-    });
-    const body1GrammarJson = await body1GrammarRes.json();
+    const body1GrammarJson = await fetchParagraphGrammar(data.body1);
 
 
     // 2
@@ -107,16 +111,9 @@ function TextInput() {
       }),
     });
 
-    const body2GrammarRes = await fetch("/api/paragraph-grammar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paragraph: data.body2,
-      }),
-    });
-    const body2StructureJson = await body2StructureRes.json();
-    const body2GrammarJson = await body2GrammarRes.json();
+    const body2GrammarJson = await fetchParagraphGrammar(data.body2);
 
+    const body2StructureJson = await body2StructureRes.json();
 
     // 3
 
@@ -131,15 +128,7 @@ function TextInput() {
 
     const body3StructureJson = await body3StructureRes.json();
 
-    const body3GrammarRes = await fetch("/api/paragraph-grammar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paragraph: data.body3,
-      }),
-    });
-
-    const body3GrammarJson = await body3GrammarRes.json();
+    const body3GrammarJson = await fetchParagraphGrammar(data.body3);
 
     //conc
 
@@ -154,14 +143,7 @@ function TextInput() {
 
     const concJson = await concRes.json();
 
-    const concGrammarRes = await fetch("/api/paragraph-grammar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paragraph: data.conc,
-      }),
-    });
-    const concGrammarJson = await concGrammarRes.json();
+    const concGrammarJson = await fetchParagraphGrammar(data.conc);
 
     const all: AllFeedback = {
       content: {
