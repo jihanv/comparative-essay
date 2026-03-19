@@ -61,7 +61,7 @@ function TextInput() {
     });
     const structureJson = await structureRes.json();
 
-    const grammarRes = await fetch("/api/grammar", {
+    const grammarRes = await fetch("/api/paragraph-grammar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ intro: data.intro }),
@@ -91,7 +91,7 @@ function TextInput() {
     });
     const body1StructureJson = await body1StructureRes.json();
 
-    const body1GrammarRes = await fetch("/api/body1-grammar", {
+    const body1GrammarRes = await fetch("/api/paragraph-grammar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -113,7 +113,7 @@ function TextInput() {
       }),
     });
 
-    const body2GrammarRes = await fetch("/api/body1-grammar", {
+    const body2GrammarRes = await fetch("/api/paragraph-grammar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -140,7 +140,7 @@ function TextInput() {
     const body3StructureJson = await body3StructureRes.json();
     console.log(body3StructureJson.body3StructureFeedback);
 
-    const body3GrammarRes = await fetch("/api/body1-grammar", {
+    const body3GrammarRes = await fetch("/api/paragraph-grammar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -165,7 +165,7 @@ function TextInput() {
     const concJson = await concRes.json();
     console.log(concJson.concStructureFeedback);
 
-    const concGrammarRes = await fetch("/api/body1-grammar", {
+    const concGrammarRes = await fetch("/api/paragraph-grammar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -185,10 +185,10 @@ function TextInput() {
       },
       grammar: {
         intro: grammarJson.grammarFeedback ?? "",
-        body1: body1GrammarJson.body1GrammarFeedback ?? "",
-        body2: body2GrammarJson.body1GrammarFeedback ?? "",
-        body3: body3GrammarJson.body1GrammarFeedback ?? "",
-        conc: concGrammarJson.body1GrammarFeedback ?? "",
+        body1: body1GrammarJson.grammarFeedback ?? "",
+        body2: body2GrammarJson.grammarFeedback ?? "",
+        body3: body3GrammarJson.grammarFeedback ?? "",
+        conc: concGrammarJson.grammarFeedback ?? "",
       },
     };
     downloadFeedbackDocx(all, "comparative-essay-feedback.docx");
