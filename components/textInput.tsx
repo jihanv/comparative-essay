@@ -89,7 +89,7 @@ function TextInput() {
     });
     const structureJson = await structureRes.json();
 
-    const grammarRes = await fetch("/api/paragraph-grammar", {
+    const grammarRes = await fetch("/api/grammar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ intro: data.intro }),
