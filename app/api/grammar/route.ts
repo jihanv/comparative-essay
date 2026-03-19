@@ -1,30 +1,11 @@
-import { NextResponse } from "next/server";
-import { Anthropic } from "@anthropic-ai/sdk";
 import { GRAMMAR_RUBRIC } from "@/lib/rubrics";
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
+import { handleIntroTextCheck } from "@/lib/intro-text-check";
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  const intro = body.intro;
-
-  if (!intro || typeof intro !== "string") {
-    return NextResponse.json({ error: "Missing intro" }, { status: 400 });
-  }
-
-  const msg = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 700,
-    system: GRAMMAR_RUBRIC,
-    messages: [{ role: "user", content: intro }],
+  return handleIntroTextCheck({
+    req,
+    systemPrompt: GRAMMAR_RUBRIC,
+    responseKey: "grammarFeedback",
+    maxTokens: 700,
   });
-
-  const out = msg.content
-    .filter((b) => b.type === "text")
-    .map((b) => b.text)
-    .join("");
-
-  return NextResponse.json({ grammarFeedback: out });
 }
