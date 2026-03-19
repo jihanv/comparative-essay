@@ -75,10 +75,6 @@ function TextInput() {
     });
     const contextJson = await contextRes.json();
 
-    console.log("CONTEXT:", contextJson);
-
-    console.log(structureJson.structureFeedback);
-    console.log(grammarJson.grammarFeedback);
 
     // 1
     const body1StructureRes = await fetch("/api/body1-content", {
@@ -100,8 +96,6 @@ function TextInput() {
     });
     const body1GrammarJson = await body1GrammarRes.json();
 
-    console.log(body1StructureJson.body1StructureFeedback);
-    console.log(body1GrammarJson.body1GrammarFeedback);
 
     // 2
     const body2StructureRes = await fetch("/api/body2-content", {
@@ -123,8 +117,6 @@ function TextInput() {
     const body2StructureJson = await body2StructureRes.json();
     const body2GrammarJson = await body2GrammarRes.json();
 
-    console.log(body2GrammarJson.body1GrammarFeedback);
-    console.log(body2StructureJson.body2StructureFeedback);
 
     // 3
 
@@ -138,7 +130,6 @@ function TextInput() {
     });
 
     const body3StructureJson = await body3StructureRes.json();
-    console.log(body3StructureJson.body3StructureFeedback);
 
     const body3GrammarRes = await fetch("/api/paragraph-grammar", {
       method: "POST",
@@ -149,7 +140,6 @@ function TextInput() {
     });
 
     const body3GrammarJson = await body3GrammarRes.json();
-    console.log(body3GrammarJson.body1GrammarFeedback);
 
     //conc
 
@@ -163,7 +153,6 @@ function TextInput() {
     });
 
     const concJson = await concRes.json();
-    console.log(concJson.concStructureFeedback);
 
     const concGrammarRes = await fetch("/api/paragraph-grammar", {
       method: "POST",
@@ -173,7 +162,6 @@ function TextInput() {
       }),
     });
     const concGrammarJson = await concGrammarRes.json();
-    console.log(concGrammarJson.body1GrammarFeedback);
 
     const all: AllFeedback = {
       content: {
