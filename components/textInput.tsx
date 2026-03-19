@@ -57,7 +57,18 @@ function TextInput() {
 
     return res.json();
   };
+  const fetchIntroCheck = async (
+    endpoint: string,
+    payload: { intro: string },
+  ) => {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
+    return res.json();
+  };
   const fetchParagraphContent = async (
     endpoint: string,
     paragraph: string,
@@ -82,26 +93,18 @@ function TextInput() {
   };
   const onSubmit = async (data: TEssaySchema) => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    const structureRes = await fetch("/api/content", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ intro: data.intro }),
-    });
-    const structureJson = await structureRes.json();
 
-    const grammarRes = await fetch("/api/grammar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ intro: data.intro }),
+    const structureJson = await fetchIntroCheck("/api/content", {
+      intro: data.intro,
     });
-    const grammarJson = await grammarRes.json();
 
-    const contextRes = await fetch("/api/context", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ intro: data.intro }),
+    const grammarJson = await fetchIntroCheck("/api/grammar", {
+      intro: data.intro,
     });
-    const contextJson = await contextRes.json();
+
+    const contextJson = await fetchIntroCheck("/api/context", {
+      intro: data.intro,
+    });
 
 
     // 1
