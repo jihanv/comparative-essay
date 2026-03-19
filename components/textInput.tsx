@@ -36,6 +36,8 @@ const fieldLabels: Record<keyof TEssaySchema, string> = {
 function TextInput() {
   const [missingOpen, setMissingOpen] = useState(false);
   const [missingKeys, setMissingKeys] = useState<(keyof TEssaySchema)[]>([]);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -107,71 +109,84 @@ function TextInput() {
     setMissingKeys(keys);
     setMissingOpen(true);
   };
+
+
   const onSubmit = async (data: TEssaySchema) => {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    setSubmitError(null);
 
-    const structureJson = await fetchIntroCheck("/api/content", {
-      intro: data.intro,
-    });
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    const grammarJson = await fetchIntroCheck("/api/grammar", {
-      intro: data.intro,
-    });
+      const structureJson = await fetchIntroCheck("/api/content", {
+        intro: data.intro,
+      });
 
-    const contextJson = await fetchIntroCheck("/api/context", {
-      intro: data.intro,
-    });
+      const grammarJson = await fetchIntroCheck("/api/grammar", {
+        intro: data.intro,
+      });
 
-
-    // 1
-    const body1StructureJson = await fetchParagraphContent<{
-      body1StructureFeedback: string;
-    }>("/api/body1-content", data.body1, contextJson);
-
-    const body1GrammarJson = await fetchParagraphGrammar(data.body1);
+      const contextJson = await fetchIntroCheck("/api/context", {
+        intro: data.intro,
+      });
 
 
-    // 2
-    const body2StructureJson = await fetchParagraphContent<{
-      body2StructureFeedback: string;
-    }>("/api/body2-content", data.body2, contextJson);
+      // 1
+      const body1StructureJson = await fetchParagraphContent<{
+        body1StructureFeedback: string;
+      }>("/api/body1-content", data.body1, contextJson);
 
-    const body2GrammarJson = await fetchParagraphGrammar(data.body2);
+      const body1GrammarJson = await fetchParagraphGrammar(data.body1);
+
+
+      // 2
+      const body2StructureJson = await fetchParagraphContent<{
+        body2StructureFeedback: string;
+      }>("/api/body2-content", data.body2, contextJson);
+
+      const body2GrammarJson = await fetchParagraphGrammar(data.body2);
 
 
 
-    // 3
+      // 3
 
-    const body3StructureJson = await fetchParagraphContent<{
-      body3StructureFeedback: string;
-    }>("/api/body3-content", data.body3, contextJson);
-    const body3GrammarJson = await fetchParagraphGrammar(data.body3);
+      const body3StructureJson = await fetchParagraphContent<{
+        body3StructureFeedback: string;
+      }>("/api/body3-content", data.body3, contextJson);
+      const body3GrammarJson = await fetchParagraphGrammar(data.body3);
 
-    //conc
+      //conc
 
-    const concJson = await fetchParagraphContent<{
-      concStructureFeedback: string;
-    }>("/api/concluding", data.conc, contextJson);
+      const concJson = await fetchParagraphContent<{
+        concStructureFeedback: string;
+      }>("/api/concluding", data.conc, contextJson);
 
-    const concGrammarJson = await fetchParagraphGrammar(data.conc);
+      const concGrammarJson = await fetchParagraphGrammar(data.conc);
 
-    const all: AllFeedback = {
-      content: {
-        intro: structureJson.structureFeedback ?? "",
-        body1: body1StructureJson.body1StructureFeedback ?? "",
-        body2: body2StructureJson.body2StructureFeedback ?? "",
-        body3: body3StructureJson.body3StructureFeedback ?? "",
-        conc: concJson.concStructureFeedback ?? "",
-      },
-      grammar: {
-        intro: grammarJson.grammarFeedback ?? "",
-        body1: body1GrammarJson.grammarFeedback ?? "",
-        body2: body2GrammarJson.grammarFeedback ?? "",
-        body3: body3GrammarJson.grammarFeedback ?? "",
-        conc: concGrammarJson.grammarFeedback ?? "",
-      },
-    };
-    downloadFeedbackDocx(all, "comparative-essay-feedback.docx");
+      const all: AllFeedback = {
+        content: {
+          intro: structureJson.structureFeedback ?? "",
+          body1: body1StructureJson.body1StructureFeedback ?? "",
+          body2: body2StructureJson.body2StructureFeedback ?? "",
+          body3: body3StructureJson.body3StructureFeedback ?? "",
+          conc: concJson.concStructureFeedback ?? "",
+        },
+        grammar: {
+          intro: grammarJson.grammarFeedback ?? "",
+          body1: body1GrammarJson.grammarFeedback ?? "",
+          body2: body2GrammarJson.grammarFeedback ?? "",
+          body3: body3GrammarJson.grammarFeedback ?? "",
+          conc: concGrammarJson.grammarFeedback ?? "",
+        },
+      };
+      downloadFeedbackDocx(all, "comparative-essay-feedback.docx");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Something went wrong while generating feedback.";
+
+      setSubmitError(message);
+    }
   };
 
   return (
