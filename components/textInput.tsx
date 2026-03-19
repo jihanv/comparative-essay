@@ -47,16 +47,48 @@ function TextInput() {
   } = useForm({
     resolver: zodResolver(essaySchema),
   });
-
-  const fetchParagraphGrammar = async (paragraph: string) => {
-    const res = await fetch("/api/paragraph-grammar", {
+  const postJsonOrThrow = async <T,>(
+    endpoint: string,
+    payload: unknown,
+  ): Promise<T> => {
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paragraph }),
+      body: JSON.stringify(payload),
     });
 
-    return res.json();
+    const json = await res.json();
+
+    if (!res.ok) {
+      const message =
+        typeof json?.error === "string"
+          ? json.error
+          : `Request failed: ${res.status}`;
+      throw new Error(`${endpoint}: ${message}`);
+    }
+
+    return json as T;
   };
+
+  const fetchParagraphGrammar = async (paragraph: string) => {
+    return postJsonOrThrow<{ grammarFeedback: string }>(
+      "/api/paragraph-grammar",
+      { paragraph },
+    );
+  };
+
+  const fetchParagraphContent = async <T,>(
+    endpoint: string,
+    paragraph: string,
+    introContext: unknown,
+  ): Promise<T> => {
+    return postJsonOrThrow<T>(endpoint, {
+      paragraph,
+      introContext,
+    });
+  };
+
+
   const fetchIntroCheck = async (
     endpoint: string,
     payload: { intro: string },
@@ -65,22 +97,6 @@ function TextInput() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-    });
-
-    return res.json();
-  };
-  const fetchParagraphContent = async (
-    endpoint: string,
-    paragraph: string,
-    introContext: unknown,
-  ) => {
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paragraph,
-        introContext,
-      }),
     });
 
     return res.json();
@@ -108,21 +124,17 @@ function TextInput() {
 
 
     // 1
-    const body1StructureJson = await fetchParagraphContent(
-      "/api/body1-content",
-      data.body1,
-      contextJson,
-    );
+    const body1StructureJson = await fetchParagraphContent<{
+      body1StructureFeedback: string;
+    }>("/api/body1-content", data.body1, contextJson);
 
     const body1GrammarJson = await fetchParagraphGrammar(data.body1);
 
 
     // 2
-    const body2StructureJson = await fetchParagraphContent(
-      "/api/body2-content",
-      data.body2,
-      contextJson,
-    );
+    const body2StructureJson = await fetchParagraphContent<{
+      body2StructureFeedback: string;
+    }>("/api/body2-content", data.body2, contextJson);
 
     const body2GrammarJson = await fetchParagraphGrammar(data.body2);
 
@@ -130,21 +142,16 @@ function TextInput() {
 
     // 3
 
-    const body3StructureJson = await fetchParagraphContent(
-      "/api/body3-content",
-      data.body3,
-      contextJson,
-    );
-
+    const body3StructureJson = await fetchParagraphContent<{
+      body3StructureFeedback: string;
+    }>("/api/body3-content", data.body3, contextJson);
     const body3GrammarJson = await fetchParagraphGrammar(data.body3);
 
     //conc
 
-    const concJson = await fetchParagraphContent(
-      "/api/concluding",
-      data.conc,
-      contextJson,
-    );
+    const concJson = await fetchParagraphContent<{
+      concStructureFeedback: string;
+    }>("/api/concluding", data.conc, contextJson);
 
     const concGrammarJson = await fetchParagraphGrammar(data.conc);
 
