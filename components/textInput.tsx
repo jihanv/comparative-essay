@@ -58,6 +58,23 @@ function TextInput() {
     return res.json();
   };
 
+  const fetchParagraphContent = async (
+    endpoint: string,
+    paragraph: string,
+    introContext: unknown,
+  ) => {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        paragraph,
+        introContext,
+      }),
+    });
+
+    return res.json();
+  };
+
   const onInvalid = (errs: FieldErrors<TEssaySchema>) => {
     const keys = Object.keys(errs) as (keyof TEssaySchema)[];
     setMissingKeys(keys);
@@ -88,60 +105,43 @@ function TextInput() {
 
 
     // 1
-    const body1StructureRes = await fetch("/api/body1-content", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paragraph: data.body1,
-        introContext: contextJson,
-      }),
-    });
-    const body1StructureJson = await body1StructureRes.json();
+    const body1StructureJson = await fetchParagraphContent(
+      "/api/body1-content",
+      data.body1,
+      contextJson,
+    );
 
     const body1GrammarJson = await fetchParagraphGrammar(data.body1);
 
 
     // 2
-    const body2StructureRes = await fetch("/api/body2-content", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paragraph: data.body2,
-        introContext: contextJson,
-      }),
-    });
+    const body2StructureJson = await fetchParagraphContent(
+      "/api/body2-content",
+      data.body2,
+      contextJson,
+    );
 
     const body2GrammarJson = await fetchParagraphGrammar(data.body2);
 
-    const body2StructureJson = await body2StructureRes.json();
+
 
     // 3
 
-    const body3StructureRes = await fetch("/api/body3-content", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paragraph: data.body3,
-        introContext: contextJson,
-      }),
-    });
-
-    const body3StructureJson = await body3StructureRes.json();
+    const body3StructureJson = await fetchParagraphContent(
+      "/api/body3-content",
+      data.body3,
+      contextJson,
+    );
 
     const body3GrammarJson = await fetchParagraphGrammar(data.body3);
 
     //conc
 
-    const concRes = await fetch("/api/concluding", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paragraph: data.conc, // <-- your conclusion textarea
-        introContext: contextJson, // <-- extracted from intro
-      }),
-    });
-
-    const concJson = await concRes.json();
+    const concJson = await fetchParagraphContent(
+      "/api/concluding",
+      data.conc,
+      contextJson,
+    );
 
     const concGrammarJson = await fetchParagraphGrammar(data.conc);
 
