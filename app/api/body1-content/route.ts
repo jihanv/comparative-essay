@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
-import { Anthropic } from "@anthropic-ai/sdk";
 import { BODY1_CONTENT_RUBRIC } from "@/lib/rubrics";
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
+import { getAnthropicClient } from "@/lib/anthropic";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -21,7 +17,7 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-
+  const anthropic = getAnthropicClient();
   const msg = await anthropic.messages.create({
     model: "claude-haiku-4-5-20251001",
     max_tokens: 1000,
