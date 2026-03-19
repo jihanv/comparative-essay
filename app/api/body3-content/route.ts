@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   }
 
   const msg = await anthropic.messages.create({
-    model: "claude-3-haiku-20240307",
+    model: "claude-haiku-4-5-20251001",
     max_tokens: 1000,
     temperature: 0,
     system: BODY3_CONTENT_RUBRIC,
