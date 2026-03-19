@@ -28,7 +28,7 @@ export async function handleIntroTextCheck({
   }
 
   const anthropic = getAnthropicClient();
-
+  //claude-haiku-4-5-20251001
   const msg = await anthropic.messages.create({
     model: "claude-haiku-4-5-20251001",
     max_tokens: maxTokens,

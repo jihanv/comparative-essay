@@ -25,10 +25,18 @@ export const essaySchema = z.object({
 
 export type TEssaySchema = z.infer<typeof essaySchema>;
 
+export type IntroContext = {
+  subjectA: string | null;
+  subjectB: string | null;
+  focus: "similarities" | "differences" | "both" | null;
+  pointsOfComparison: string[];
+};
+
 export type SentenceSuccessResponse = {
   success: true;
   translated: string;
 };
+
 export type ParagraphCheck = {
   role: "intro" | "body" | "conclusion";
   scores: {

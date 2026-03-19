@@ -3,7 +3,7 @@
 import { Button } from "./ui/button";
 import { FieldErrors, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AllFeedback, essaySchema, TEssaySchema } from "@/lib/types";
+import { AllFeedback, essaySchema, IntroContext, TEssaySchema } from "@/lib/types";
 import TipsBlock from "./tips-block";
 import { downloadFeedbackDocx } from "@/app/features/generateFile";
 import { useState } from "react";
@@ -26,6 +26,7 @@ import {
   AlertDialogTitle,
 } from "./ui/alert-dialog";
 import { Loader2 } from "lucide-react";
+
 const fieldLabels: Record<keyof TEssaySchema, string> = {
   intro: "Introductory Paragraph",
   body1: "Body Paragraph 1",
@@ -33,6 +34,7 @@ const fieldLabels: Record<keyof TEssaySchema, string> = {
   body3: "Body Paragraph 3",
   conc: "Concluding Paragraph",
 };
+
 function TextInput() {
   const [missingOpen, setMissingOpen] = useState(false);
   const [missingKeys, setMissingKeys] = useState<(keyof TEssaySchema)[]>([]);
@@ -82,7 +84,7 @@ function TextInput() {
   const fetchParagraphContent = async <T,>(
     endpoint: string,
     paragraph: string,
-    introContext: unknown,
+    introContext: IntroContext,
   ): Promise<T> => {
     return postJsonOrThrow<T>(endpoint, {
       paragraph,
@@ -91,18 +93,30 @@ function TextInput() {
   };
 
 
-  const fetchIntroCheck = async (
-    endpoint: string,
-    payload: { intro: string },
-  ) => {
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    return res.json();
+  // const fieldLabels: Record<keyof TEssaySchema, string> = {
+  //   intro: "Introductory Paragraph",
+  //   body1: "Body Paragraph 1",
+  //   body2: "Body Paragraph 2",
+  //   body3: "Body Paragraph 3",
+  //   conc: "Concluding Paragraph",
+  // };
+  type IntroStructureResponse = {
+    structureFeedback: string;
   };
+
+  type IntroGrammarResponse = {
+    grammarFeedback: string;
+  };
+
+  type IntroContextResponse = IntroContext;
+
+  const fetchIntroCheck = async <T,>(
+    endpoint: string,
+    intro: string,
+  ): Promise<T> => {
+    return postJsonOrThrow<T>(endpoint, { intro });
+  };
+
 
   const onInvalid = (errs: FieldErrors<TEssaySchema>) => {
     const keys = Object.keys(errs) as (keyof TEssaySchema)[];
@@ -117,18 +131,20 @@ function TextInput() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
-      const structureJson = await fetchIntroCheck("/api/content", {
-        intro: data.intro,
-      });
+      const structureJson = await fetchIntroCheck<IntroStructureResponse>(
+        "/api/content",
+        data.intro,
+      );
 
-      const grammarJson = await fetchIntroCheck("/api/grammar", {
-        intro: data.intro,
-      });
+      const grammarJson = await fetchIntroCheck<IntroGrammarResponse>(
+        "/api/grammar",
+        data.intro,
+      );
 
-      const contextJson = await fetchIntroCheck("/api/context", {
-        intro: data.intro,
-      });
-
+      const contextJson = await fetchIntroCheck<IntroContextResponse>(
+        "/api/context",
+        data.intro,
+      );
 
       // 1
       const body1StructureJson = await fetchParagraphContent<{
