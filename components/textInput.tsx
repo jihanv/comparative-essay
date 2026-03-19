@@ -349,6 +349,11 @@ function TextInput() {
                 </div>
               </div>
             </div>
+            {submitError && (
+              <div className="rounded-[5px] border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {submitError}
+              </div>
+            )}
             <div className="flex gap-1 justify-center">
               <Button
                 className="bg-black text-white transition-transform duration-150 ease-out hover:scale-[1.05] active:scale-[0.98] disabled:hover:scale-100"
