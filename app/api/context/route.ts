@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { INTRO_CONTEXT_PROMPT } from "@/lib/rubrics";
-import { extractClaudeText, parseClaudeJson } from "@/lib/claude-response";
-import { getAnthropicClient } from "@/lib/anthropic";
+import { parseClaudeJson } from "@/lib/claude-response";
+import { getClaudeModel } from "@/lib/langchain";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -11,17 +11,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing intro" }, { status: 400 });
   }
 
-  const anthropic = getAnthropicClient();
+  const model = getClaudeModel(700);
 
-  const msg = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 700,
-    system: INTRO_CONTEXT_PROMPT,
-    temperature: 0,
-    messages: [{ role: "user", content: intro }],
-  });
+  const aiMsg = await model.invoke([
+    { role: "system", content: INTRO_CONTEXT_PROMPT },
+    { role: "user", content: intro },
+  ]);
 
-  const raw = extractClaudeText(msg);
+  const raw =
+    typeof aiMsg.text === "string"
+      ? aiMsg.text
+      : typeof aiMsg.content === "string"
+        ? aiMsg.content
+        : "";
 
   let parsed;
   try {
