@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { INTRO_CONTEXT_PROMPT } from "@/lib/rubrics";
-import { parseClaudeJson } from "@/lib/claude-response";
 import { getClaudeModel } from "@/lib/langchain";
+import { parseModelJson } from "@/lib/model-response";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
   let parsed;
   try {
-    parsed = parseClaudeJson(raw);
+    parsed = parseModelJson(raw);
   } catch {
     return NextResponse.json(
       { error: "Invalid JSON from model", raw },
