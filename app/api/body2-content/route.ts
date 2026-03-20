@@ -6,6 +6,6 @@ export async function POST(req: Request) {
     req,
     systemPrompt: BODY2_CONTENT_RUBRIC,
     responseKey: "body2StructureFeedback",
-    maxTokens: 1000,
+    maxTokens: 600,
   });
 }
