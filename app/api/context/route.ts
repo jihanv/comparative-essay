@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { INTRO_CONTEXT_PROMPT } from "@/lib/rubrics";
 import { getChatModel } from "@/lib/langchain";
-import { parseModelJson } from "@/lib/model-response";
+
+const IntroContextSchema = z.object({
+  subjectA: z.string().nullable(),
+  subjectB: z.string().nullable(),
+  focus: z.enum(["similarities", "differences", "both"]).nullable(),
+  pointsOfComparison: z.array(z.string()),
+});
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -11,29 +18,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing intro" }, { status: 400 });
   }
 
-  const model = getChatModel(700);
-
-  const aiMsg = await model.invoke([
-    { role: "system", content: INTRO_CONTEXT_PROMPT },
-    { role: "user", content: intro },
-  ]);
-
-  const raw =
-    typeof aiMsg.text === "string"
-      ? aiMsg.text
-      : typeof aiMsg.content === "string"
-        ? aiMsg.content
-        : "";
-
-  let parsed;
   try {
-    parsed = parseModelJson(raw);
-  } catch {
+    const model = getChatModel(700);
+    const structuredModel = model.withStructuredOutput(IntroContextSchema);
+
+    const parsed = await structuredModel.invoke([
+      { role: "system", content: INTRO_CONTEXT_PROMPT },
+      { role: "user", content: intro },
+    ]);
+
+    return NextResponse.json(parsed);
+  } catch (error) {
+    console.error("/api/context structured output failed:", error);
+
     return NextResponse.json(
-      { error: "Invalid JSON from model", raw },
+      { error: "Invalid structured output from model" },
       { status: 500 },
     );
   }
-
-  return NextResponse.json(parsed);
 }

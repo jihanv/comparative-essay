@@ -5,7 +5,7 @@ type Provider = "claude" | "deepseek";
 
 // Manual switch for testing.
 // Later, you can change this to "deepseek" when you want to test DeepSeek.
-const ACTIVE_PROVIDER: Provider = "claude";
+const ACTIVE_PROVIDER: Provider = "deepseek";
 
 const claudeModelCache = new Map<number, ChatAnthropic>();
 const deepSeekModelCache = new Map<number, ChatDeepSeek>();
@@ -48,7 +48,7 @@ export function getDeepSeekModel(maxTokens = 1000) {
 
   const model = new ChatDeepSeek({
     apiKey,
-    model: "deepseek-reasoner",
+    model: "deepseek-chat",
     temperature: 0,
     maxTokens,
     maxRetries: 2,
