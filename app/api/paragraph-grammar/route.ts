@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { GRAMMAR_RUBRIC } from "@/lib/rubrics";
-import { getAnthropicClient } from "@/lib/anthropic";
-import { extractClaudeText } from "@/lib/claude-response";
+import { getClaudeModel } from "@/lib/langchain";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -11,17 +10,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing paragraph" }, { status: 400 });
   }
 
-  const anthropic = getAnthropicClient();
+  const model = getClaudeModel(1000);
 
-  const msg = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 1000,
-    system: GRAMMAR_RUBRIC,
-    messages: [{ role: "user", content: paragraph }],
-    temperature: 0,
-  });
+  const aiMsg = await model.invoke([
+    { role: "system", content: GRAMMAR_RUBRIC },
+    { role: "user", content: paragraph },
+  ]);
 
-  const out = extractClaudeText(msg);
+  const out =
+    typeof aiMsg.text === "string"
+      ? aiMsg.text
+      : typeof aiMsg.content === "string"
+        ? aiMsg.content
+        : "";
 
   return NextResponse.json({ grammarFeedback: out });
 }
