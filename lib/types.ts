@@ -3,20 +3,20 @@ import z from "zod";
 export const essaySchema = z.object({
   intro: z
     .string()
-    .max(5000, "Paragraphs should be less than 500 characters long")
+    .max(5000, "Paragraphs should be less than 5000 characters long")
     .min(1, "Intro is required"),
   body1: z
     .string()
-    .max(5000, "Paragraphs should be less than 500 characters long")
+    .max(5000, "Paragraphs should be less than 5000 characters long")
     .min(1, "Body 1 is required"),
   body2: z
     .string()
-    .max(5000, "Paragraphs should be less than 500 characters long")
+    .max(5000, "Paragraphs should be less than 5000 characters long")
     .min(1, "Body 2 is required"),
   body3: z
     .string()
-    .max(5000, "Paragraphs should be less than 500 characters long")
-    .min(1, "Body 2 is required"),
+    .max(5000, "Paragraphs should be less than 5000 characters long")
+    .min(1, "Body 3 is required"),
   conc: z
     .string()
     .max(5000, "Paragraphs should be less than 500 characters long")
