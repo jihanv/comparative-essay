@@ -26,7 +26,7 @@ export async function handleIntroTextCheck({
     );
   }
 
-  const model = getClaudeModel();
+  const model = getClaudeModel(maxTokens);
 
   const aiMsg = await model.invoke([
     { role: "system", content: systemPrompt },
