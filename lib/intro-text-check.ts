@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getChatModel } from "@/lib/langchain";
 import { extractModelText } from "@/lib/model-response";
+
 type IntroTextCheckOptions = {
   req: Request;
   systemPrompt: string;

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { GRAMMAR_RUBRIC } from "@/lib/rubrics";
-import { getClaudeModel } from "@/lib/langchain";
+import { getChatModel } from "@/lib/langchain";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing paragraph" }, { status: 400 });
   }
 
-  const model = getClaudeModel(1000);
+  const model = getChatModel(1000);
 
   const aiMsg = await model.invoke([
     { role: "system", content: GRAMMAR_RUBRIC },
