@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getClaudeModel } from "@/lib/langchain";
+import { getChatModel } from "@/lib/langchain";
 
 type ParagraphContentOptions = {
   req: Request;
@@ -33,7 +33,7 @@ export async function handleParagraphContentCheck({
     );
   }
 
-  const model = getClaudeModel(maxTokens);
+  const model = getChatModel(maxTokens);
 
   const aiMsg = await model.invoke([
     { role: "system", content: systemPrompt },

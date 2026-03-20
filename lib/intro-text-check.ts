@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getClaudeModel } from "@/lib/langchain";
+import { getChatModel } from "@/lib/langchain";
 import { extractModelText } from "@/lib/model-response";
 type IntroTextCheckOptions = {
   req: Request;
@@ -26,7 +26,7 @@ export async function handleIntroTextCheck({
     );
   }
 
-  const model = getClaudeModel(maxTokens);
+  const model = getChatModel(maxTokens);
 
   const aiMsg = await model.invoke([
     { role: "system", content: systemPrompt },

@@ -34,7 +34,7 @@ export function getClaudeModel(maxTokens = 800) {
   return model;
 }
 
-export function getDeepSeekModel(maxTokens = 800) {
+export function getDeepSeekModel(maxTokens = 1000) {
   const apiKey = process.env.DEEPSEEK_API_KEY;
 
   if (!apiKey) {
@@ -48,7 +48,7 @@ export function getDeepSeekModel(maxTokens = 800) {
 
   const model = new ChatDeepSeek({
     apiKey,
-    model: "deepseek-chat",
+    model: "deepseek-reasoner",
     temperature: 0,
     maxTokens,
     maxRetries: 2,
