@@ -13,3 +13,15 @@ export function parseModelJson(raw: string) {
 
   return JSON.parse(jsonString);
 }
+
+export function extractModelText(aiMsg: { text?: unknown; content?: unknown }) {
+  if (typeof aiMsg.text === "string") {
+    return aiMsg.text;
+  }
+
+  if (typeof aiMsg.content === "string") {
+    return aiMsg.content;
+  }
+
+  return "";
+}
