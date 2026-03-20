@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getClaudeModel } from "@/lib/langchain";
-
+import { extractModelText } from "@/lib/model-response";
 type IntroTextCheckOptions = {
   req: Request;
   systemPrompt: string;
@@ -33,12 +33,7 @@ export async function handleIntroTextCheck({
     { role: "user", content: userContentBuilder(intro) },
   ]);
 
-  const out =
-    typeof aiMsg.text === "string"
-      ? aiMsg.text
-      : typeof aiMsg.content === "string"
-        ? aiMsg.content
-        : "";
+  const out = extractModelText(aiMsg);
 
   return NextResponse.json({ [responseKey]: out });
 }
