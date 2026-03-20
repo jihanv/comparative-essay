@@ -23,9 +23,13 @@ export async function handleParagraphContentCheck({
     return NextResponse.json({ error: "Missing paragraph" }, { status: 400 });
   }
 
-  if (!introContext) {
+  if (
+    !introContext ||
+    typeof introContext !== "object" ||
+    Array.isArray(introContext)
+  ) {
     return NextResponse.json(
-      { error: "Missing introContext" },
+      { error: "Invalid introContext" },
       { status: 400 },
     );
   }
