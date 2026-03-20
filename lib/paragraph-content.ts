@@ -13,7 +13,7 @@ export async function handleParagraphContentCheck({
   req,
   systemPrompt,
   responseKey,
-  maxTokens = 1000,
+  maxTokens = 600,
 }: ParagraphContentOptions) {
   const body = await req.json();
   const paragraph = body.paragraph;
