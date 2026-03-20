@@ -51,6 +51,7 @@ function TextInput() {
   } = useForm({
     resolver: zodResolver(essaySchema),
   });
+
   const postJsonOrThrow = async <T,>(
     endpoint: string,
     payload: unknown,
@@ -61,13 +62,28 @@ function TextInput() {
       body: JSON.stringify(payload),
     });
 
-    const json = await res.json();
+    const raw = await res.text();
+
+    let json: unknown = null;
+    if (raw) {
+      try {
+        json = JSON.parse(raw);
+      } catch {
+        throw new Error(
+          `${endpoint}: Expected JSON response but received invalid JSON (${res.status})`,
+        );
+      }
+    }
 
     if (!res.ok) {
       const message =
-        typeof json?.error === "string"
-          ? json.error
+        typeof json === "object" &&
+          json !== null &&
+          "error" in json &&
+          typeof (json as { error?: unknown }).error === "string"
+          ? (json as { error: string }).error
           : `Request failed: ${res.status}`;
+
       throw new Error(`${endpoint}: ${message}`);
     }
 
