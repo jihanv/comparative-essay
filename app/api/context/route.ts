@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { INTRO_CONTEXT_PROMPT } from "@/lib/rubrics";
-import { getClaudeModel } from "@/lib/langchain";
+import { getChatModel } from "@/lib/langchain";
 import { parseModelJson } from "@/lib/model-response";
 
 export async function POST(req: Request) {
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing intro" }, { status: 400 });
   }
 
-  const model = getClaudeModel(700);
+  const model = getChatModel(700);
 
   const aiMsg = await model.invoke([
     { role: "system", content: INTRO_CONTEXT_PROMPT },
