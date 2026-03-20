@@ -129,7 +129,7 @@ function TextInput() {
     setSubmitError(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // await new Promise((resolve) => setTimeout(resolve, 3000));
 
       const structureJson = await fetchIntroCheck<IntroStructureResponse>(
         "/api/content",
