@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAnthropicClient } from "@/lib/anthropic";
-import { extractClaudeText } from "@/lib/claude-response";
+import { getClaudeModel } from "@/lib/langchain";
 
 type ParagraphContentOptions = {
   req: Request;
@@ -34,25 +33,25 @@ export async function handleParagraphContentCheck({
     );
   }
 
-  const anthropic = getAnthropicClient();
+  const model = getClaudeModel(maxTokens);
 
-  const msg = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: maxTokens,
-    temperature: 0,
-    system: systemPrompt,
-    messages: [
-      {
-        role: "user",
-        content: JSON.stringify({
-          introContext,
-          paragraph,
-        }),
-      },
-    ],
-  });
+  const aiMsg = await model.invoke([
+    { role: "system", content: systemPrompt },
+    {
+      role: "user",
+      content: JSON.stringify({
+        introContext,
+        paragraph,
+      }),
+    },
+  ]);
 
-  const out = extractClaudeText(msg);
+  const out =
+    typeof aiMsg.text === "string"
+      ? aiMsg.text
+      : typeof aiMsg.content === "string"
+        ? aiMsg.content
+        : "";
 
   return NextResponse.json({ [responseKey]: out });
 }
