@@ -92,14 +92,6 @@ function TextInput() {
     });
   };
 
-
-  // const fieldLabels: Record<keyof TEssaySchema, string> = {
-  //   intro: "Introductory Paragraph",
-  //   body1: "Body Paragraph 1",
-  //   body2: "Body Paragraph 2",
-  //   body3: "Body Paragraph 3",
-  //   conc: "Concluding Paragraph",
-  // };
   type IntroStructureResponse = {
     structureFeedback: string;
   };
@@ -108,6 +100,21 @@ function TextInput() {
     grammarFeedback: string;
   };
 
+  type Body1StructureResponse = {
+    body1StructureFeedback: string;
+  };
+
+  type Body2StructureResponse = {
+    body2StructureFeedback: string;
+  };
+
+  type Body3StructureResponse = {
+    body3StructureFeedback: string;
+  };
+
+  type ConclusionStructureResponse = {
+    concStructureFeedback: string;
+  };
   type IntroContextResponse = IntroContext;
 
   const fetchIntroCheck = async <T,>(
@@ -147,34 +154,39 @@ function TextInput() {
       );
 
       // 1
-      const body1StructureJson = await fetchParagraphContent<{
-        body1StructureFeedback: string;
-      }>("/api/body1-content", data.body1, contextJson);
+      const body1StructureJson = await fetchParagraphContent<Body1StructureResponse>(
+        "/api/body1-content",
+        data.body1,
+        contextJson,
+      );
 
       const body1GrammarJson = await fetchParagraphGrammar(data.body1);
 
 
       // 2
-      const body2StructureJson = await fetchParagraphContent<{
-        body2StructureFeedback: string;
-      }>("/api/body2-content", data.body2, contextJson);
+      const body2StructureJson = await fetchParagraphContent<Body2StructureResponse>(
+        "/api/body2-content",
+        data.body2,
+        contextJson,
+      );
 
       const body2GrammarJson = await fetchParagraphGrammar(data.body2);
 
-
-
       // 3
 
-      const body3StructureJson = await fetchParagraphContent<{
-        body3StructureFeedback: string;
-      }>("/api/body3-content", data.body3, contextJson);
+      const body3StructureJson = await fetchParagraphContent<Body3StructureResponse>(
+        "/api/body3-content",
+        data.body3,
+        contextJson,
+      );
       const body3GrammarJson = await fetchParagraphGrammar(data.body3);
 
       //conc
-
-      const concJson = await fetchParagraphContent<{
-        concStructureFeedback: string;
-      }>("/api/concluding", data.conc, contextJson);
+      const concJson = await fetchParagraphContent<ConclusionStructureResponse>(
+        "/api/concluding",
+        data.conc,
+        contextJson,
+      );
 
       const concGrammarJson = await fetchParagraphGrammar(data.conc);
 
